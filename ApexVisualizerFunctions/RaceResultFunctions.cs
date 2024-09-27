@@ -1,3 +1,4 @@
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -7,12 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace ApexVisualizerFunctions
 {
-    public class PostRaceResults
+    public class RaceResultFunctions
     {
-        private readonly ILogger<PostRaceResults> _logger;
+        private readonly ILogger<RaceResultFunctions> _logger;
         private readonly string _connectionString;
 
-        public PostRaceResults(ILogger<PostRaceResults> logger, IConfiguration configuration)
+        public RaceResultFunctions(ILogger<RaceResultFunctions> logger, IConfiguration configuration)
         {
             logger.LogInformation("Configuration loaded: {config}", configuration.ToString());
             _logger = logger;
@@ -30,13 +31,14 @@ namespace ApexVisualizerFunctions
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand("SELECT TOP (1) * FROM [SalesLT].[Address]", connection);
-                SqlDataReader reader = command.ExecuteReader();
+                //TODO: This currently returns the number 9, which is the value in the first column (ID) that matches the
+                //      type used with QueryFirstOrDefault (string). Use a Full Object to represent the record and then
+                //      select the full row for processing.
+                var result = connection.QueryFirstOrDefault<string>("SELECT TOP (1) * FROM [SalesLT].[Address]");
 
-                if (reader.Read())
+                if (result != null)
                 {
                     // Process the data (example)
-                    var result = reader["AddressLine1"].ToString();
                     return new OkObjectResult($"Race result: {result}");
                 }
                 else
@@ -44,8 +46,6 @@ namespace ApexVisualizerFunctions
                     return new NotFoundResult();
                 }
             }
-
-            //return new OkObjectResult("Welcome to Azure Functions!");
         }
     }
 }
