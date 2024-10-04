@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ApexCore.DAL.Entities
 {
-    internal class RunResult
+    public class RunResult
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }

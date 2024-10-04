@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace ApexCore.DAL.Interfaces
 {
-    internal interface ICosmosWriter
+    public interface ICosmosWriter
     {
-        Task<ItemResponse<DrivingEvent>> UpsertDrivingEvent();
+        Task<ItemResponse<DrivingEvent>> UpsertDrivingEvent(DrivingEvent drivingEvent);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ApexCore.DAL.Entities
 {
-    internal class DrivingEvent
+    public class DrivingEvent
     {
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
