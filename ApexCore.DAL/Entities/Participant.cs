@@ -10,9 +10,7 @@ namespace ApexCore.DAL.Entities
     public class Participant
     {
         [JsonProperty(PropertyName = "id")]
-        public int Id { get; set; }
-        [JsonProperty(PropertyName = "partitionKey")]
-        public string PartitionKey { get; set; }
+        public string Id { get; set; }
         public string ParticipantName { get; set; }
         public string CarClass { get; set; }
         public string CarNumber { get; set; }

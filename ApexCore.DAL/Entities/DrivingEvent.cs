@@ -18,7 +18,7 @@ namespace ApexCore.DAL.Entities
         public DateTime EventDate { get; set; }
         public string Location { get; set; }
         public string CarClubName { get; set; }
-        public Driver[] Drivers { get; set; }
+        public Participant[] Participants { get; set; }
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);

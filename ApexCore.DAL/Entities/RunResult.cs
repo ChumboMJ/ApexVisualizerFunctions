@@ -10,12 +10,10 @@ namespace ApexCore.DAL.Entities
     public class RunResult
     {
         [JsonProperty(PropertyName = "id")]
-        public int Id { get; set; }
-        [JsonProperty(PropertyName = "partitionKey")]
-        public string PartitionKey { get; set; }
+        public string Id { get; set; }
         public int RunNumber { get; set; }
-        public int RunTime { get; set; }
-        public int PenaltySeconds { get; set; }
+        public decimal RunTime { get; set; }
+        public decimal PenaltySeconds { get; set; }
         public bool DNF { get; set; }
     }
 }
