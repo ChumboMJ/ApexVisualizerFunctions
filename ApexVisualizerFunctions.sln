@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexVisualizerFunctions", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexCore", "ApexCore\ApexCore.csproj", "{89C17996-0E53-4BBE-BCDB-347A3BBA7DE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexCore.DAL", "ApexCore.DAL\ApexCore.DAL.csproj", "{14D5C66E-5136-475A-91A8-31F29A93D7D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexCore.IntegrationTests", "ApexCore.IntegrationTests\ApexCore.IntegrationTests.csproj", "{CEDFDE1B-DBC0-489A-A3DC-6D9ADC0256DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{89C17996-0E53-4BBE-BCDB-347A3BBA7DE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89C17996-0E53-4BBE-BCDB-347A3BBA7DE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89C17996-0E53-4BBE-BCDB-347A3BBA7DE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14D5C66E-5136-475A-91A8-31F29A93D7D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D5C66E-5136-475A-91A8-31F29A93D7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14D5C66E-5136-475A-91A8-31F29A93D7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14D5C66E-5136-475A-91A8-31F29A93D7D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEDFDE1B-DBC0-489A-A3DC-6D9ADC0256DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEDFDE1B-DBC0-489A-A3DC-6D9ADC0256DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEDFDE1B-DBC0-489A-A3DC-6D9ADC0256DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEDFDE1B-DBC0-489A-A3DC-6D9ADC0256DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
