@@ -1,10 +1,20 @@
+using ApexCore.DAL;
 using ApexCore.DAL.Entities;
+using ApexCore.DAL.Interfaces;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ApexCore.IntegrationTests
 {
     [TestClass]
     public class ApexCosmosTests
     {
+        private DrivingEvent _testEvent;
+        private ICosmosWriter _cosmosWriter;
+        private CosmosClient _cosmosClient;
+        private Container _container;
+
         [TestInitialize]
         public void ApexCosmosSetUp()
         {
@@ -48,20 +58,68 @@ namespace ApexCore.IntegrationTests
             };
 
             var testEvent = new DrivingEvent() {
-                Id = "778899",
-                PartitionKey = "Test Partition Key",
-                EventName = "Apex Test Event",
+                Id = "778899.1",
+                PartitionKey = "778899",
+                EventName = "Apex Test Event Updated",
                 EventDate = DateTime.Now,
                 Location = "Test Location",
                 CarClubName = "PNW N Club",
                 Participants = [testParticipant]
             };
+
+            _testEvent = testEvent;
+
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            _cosmosWriter = serviceProvider.GetRequiredService<ICosmosWriter>();
+            _cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var databaseId = configuration["CosmosDb:DatabaseId"];
+            var containerId = configuration["CosmosDb:ContainerId"];
+            _container = _cosmosClient.GetContainer(databaseId, containerId);
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<CosmosClient>(serviceProvider =>
+            {
+                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                var connectionString = configuration["CosmosDb:ConnectionString"];
+                return new CosmosClient(connectionString);
+            });
+
+            services.AddScoped<ICosmosWriter, ApexCosmosWriter>();
+            services.AddLogging();
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build());
         }
 
         [TestMethod]
-        public void TestMethod1()
+        [Priority(0)]
+        public async Task InsertTestDrivingEventAsync()
         {
+            var response = await _cosmosWriter.UpsertDrivingEventAsync(_testEvent);
 
+            Assert.IsNotNull(response);
+            Assert.AreEqual(_testEvent.Id, response.Resource.Id);
+        }
+
+
+        //TODO: This works, but Priority does not seem to garantee that this test runs after the InsertTestDrivingEventAsync test, and it needs to.
+        [TestMethod]
+        [Priority(1)]
+        public async Task DeleteTestDrivingEventAsync()
+        {
+            var response = await _cosmosWriter.DeleteDrivingEventAsync(_testEvent.PartitionKey, _testEvent.Id);
+
+            Assert.IsNotNull(response);
+            //  A successful delete operation in Cosmos DB returns a status code of 204 No Content, so we'll use
+            //  the HttpStatusCode to verify that the status code is correct.
+            Assert.AreEqual(System.Net.HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }
