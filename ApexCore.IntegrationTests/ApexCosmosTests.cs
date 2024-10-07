@@ -4,14 +4,20 @@ using ApexCore.DAL.Interfaces;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Policy;
 
 namespace ApexCore.IntegrationTests
 {
+    /// <summary>
+    /// !!PLEASE READ!! - This is an integration test that will interact with the Cosmos DB instance specified by the settings in the appsettings.json file.
+    /// These are intended to be run in-order, and will Insert a Record, Retrieve the Record, and then Delete the Record from the Cosmos DB instance.
+    /// </summary>
     [TestClass]
     public class ApexCosmosTests
     {
         private DrivingEvent _testEvent;
         private ICosmosWriter _cosmosWriter;
+        private ICosmosReader _cosmosReader;
         private CosmosClient _cosmosClient;
         private Container _container;
 
@@ -74,6 +80,7 @@ namespace ApexCore.IntegrationTests
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _cosmosWriter = serviceProvider.GetRequiredService<ICosmosWriter>();
+            _cosmosReader = serviceProvider.GetRequiredService<ICosmosReader>();
             _cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
 
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -92,6 +99,7 @@ namespace ApexCore.IntegrationTests
             });
 
             services.AddScoped<ICosmosWriter, ApexCosmosWriter>();
+            services.AddScoped<ICosmosReader, ApexCosmosReader>();
             services.AddLogging();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -99,8 +107,7 @@ namespace ApexCore.IntegrationTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        public async Task InsertTestDrivingEventAsync()
+        public async Task INT003_InsertTestDrivingEventAsync()
         {
             var response = await _cosmosWriter.UpsertDrivingEventAsync(_testEvent);
 
@@ -108,11 +115,18 @@ namespace ApexCore.IntegrationTests
             Assert.AreEqual(_testEvent.Id, response.Resource.Id);
         }
 
-
-        //TODO: This works, but Priority does not seem to garantee that this test runs after the InsertTestDrivingEventAsync test, and it needs to.
         [TestMethod]
-        [Priority(1)]
-        public async Task DeleteTestDrivingEventAsync()
+        public async Task INT002_GetTestDrivingEventAsync()
+        {
+            var response = await _cosmosReader.GetDrivingEventAsync(_testEvent.PartitionKey, _testEvent.Id);
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(_testEvent.Id, response.Resource.Id);
+        }
+
+        [TestMethod]
+        public async Task INT001_DeleteTestDrivingEventAsync()
         {
             var response = await _cosmosWriter.DeleteDrivingEventAsync(_testEvent.PartitionKey, _testEvent.Id);
 

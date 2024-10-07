@@ -11,5 +11,6 @@ namespace ApexCore.DAL.Interfaces
     public interface ICosmosReader
     {
         Task<ItemResponse<DrivingEvent>> GetDrivingEventAsync(string partitionKeyValue, string id);
+        //TODO: Implement GetAllDrivingEventsForClubAsync
     }
 }
