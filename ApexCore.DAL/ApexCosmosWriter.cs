@@ -25,11 +25,29 @@ namespace ApexCore.DAL
             _container = _cosmosClient.GetContainer(databaseId, containerId);
         }
 
-        public async Task<ItemResponse<DrivingEvent>> UpsertDrivingEvent(DrivingEvent drivingEvent)
+        public async Task<ItemResponse<DrivingEvent>> DeleteDrivingEventAsync(string partitionKeyValue, string id)
         {
             try
             {
-                var response = await _container.UpsertItemAsync(drivingEvent, new PartitionKey(drivingEvent.PartitionKey));
+                var partitionKey = new PartitionKeyBuilder().Add(id).Add(partitionKeyValue).Build();
+
+                var response = await _container.DeleteItemAsync<DrivingEvent>(id, partitionKey);
+                return response;
+            }
+            catch (CosmosException ex)
+            {
+                _logger.LogError(ex, $"Error deleteing item with id: {id} and partitionKeyValue {partitionKeyValue}");
+                throw;
+            }
+        }
+
+        public async Task<ItemResponse<DrivingEvent>> UpsertDrivingEventAsync(DrivingEvent drivingEvent)
+        {
+            try
+            {
+                var partitionKey = new PartitionKeyBuilder().Add(drivingEvent.Id).Add(drivingEvent.PartitionKey).Build();
+
+                var response = await _container.UpsertItemAsync(drivingEvent, partitionKey);
                 _logger.LogInformation("Upserted item with id: {Id}", drivingEvent.Id);
                 return response;
             }

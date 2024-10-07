@@ -10,6 +10,7 @@ namespace ApexCore.DAL.Interfaces
 {
     public interface ICosmosWriter
     {
-        Task<ItemResponse<DrivingEvent>> UpsertDrivingEvent(DrivingEvent drivingEvent);
+        Task<ItemResponse<DrivingEvent>> UpsertDrivingEventAsync(DrivingEvent drivingEvent);
+        Task<ItemResponse<DrivingEvent>> DeleteDrivingEventAsync(string partitionKeyValue, string id);
     }
 }
